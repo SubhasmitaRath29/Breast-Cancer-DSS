@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Care Support | Breast Cancer DSS</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Professional Iconography -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --accent-blue: #004ab3;
+            --bg-light: #f4f7fa;
+            --medical-grid: rgba(13, 110, 253, 0.04);
+            --danger-soft: #fff5f5;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #334155;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            /* Medical Drafting Grid */
+            background-image: 
+                linear-gradient(var(--medical-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--medical-grid) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Decorative Pulse Line */
+        .pulse-container {
+            position: fixed;
+            top: 25%;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: -1;
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        .pulse-svg path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 10s linear infinite;
+        }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* Navbar glassmorphism */
+        .navbar {
+            background: rgba(13, 110, 253, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Support Card Styling */
+        .support-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.06);
+            border: 1px solid rgba(13, 110, 253, 0.1);
+            padding: 3.5rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            background: #fff5f5;
+            color: #dc3545;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .guidance-box {
+            background: var(--danger-soft);
+            border-left: 4px solid #dc3545;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .hospital-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .hospital-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .hospital-item:hover {
+            transform: translateX(5px);
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .hospital-icon {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .btn-blue-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            padding: 12px 35px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-blue-outline:hover {
+            background: rgba(13, 110, 253, 0.05);
+            transform: translateY(-2px);
+            color: var(--accent-blue);
+        }
+
+        .page-footer {
+            margin-top: auto;
+            padding: 3rem 0;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="pulse-container">
+    <svg class="pulse-svg" width="100%" height="100%" viewBox="0 0 1000 100" preserveAspectRatio="none">
+        <path d="M0,50 L250,50 L270,20 L290,80 L310,50 L600,50 L620,10 L640,90 L660,50 L1000,50" 
+              fill="none" stroke="rgba(13, 110, 253, 0.2)" stroke-width="2" />
+    </svg>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark py-3">
+    <div class="container">
+        <span class="navbar-brand d-flex align-items-center gap-2">
+            <i data-lucide="heart-pulse" style="width: 28px; height: 28px;"></i>
+            <span class="fw-bold fs-4">Breast Cancer DSS</span>
+        </span>
+        <div class="ms-auto d-flex align-items-center">
+            <a href="/" class="btn btn-link text-white text-decoration-none me-4 small d-flex align-items-center gap-1">
+                <i data-lucide="home" style="width:16px"></i> Home
+            </a>
+            <span class="text-white me-4 opacity-75 d-none d-sm-block">
+                <i data-lucide="check-circle-2" class="me-1" style="width:14px"></i>
+                System Online
+            </span>
+            <span class="text-white me-3 fw-medium">{{ session.get('user_name') }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm px-4">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    
+    <div class="support-card mx-auto" style="max-width: 900px;" data-aos="fade-up">
+        
+        <div class="text-center">
+            <div class="status-badge">
+                <i data-lucide="alert-octagon" style="width: 14px;"></i>
+                Urgent Medical Guidance
+            </div>
+            
+            <h1 class="display-6 fw-bold mb-4" style="color: #0f172a;">Professional Care Support</h1>
+        </div>
+
+        <div class="guidance-box" data-aos="fade-right" data-aos-delay="200">
+            <div class="d-flex gap-3 align-items-start">
+                <i data-lucide="stethoscope" class="text-danger" style="width: 32px; height: 32px; flex-shrink: 0;"></i>
+                <div>
+                    <h5 class="fw-bold text-danger mb-2">Important Medical Recommendation</h5>
+                    <p class="mb-0 text-secondary">
+                        Based on the generated risk assessment, we strongly advise scheduling a consultation with a 
+                        <strong>qualified oncologist</strong> for clinical validation, further diagnostic testing, 
+                        and personalized medical advice.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-container mt-5">
+            <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                <i data-lucide="hospital" class="text-primary"></i>
+                Recommended Centers in {{ state }}
+            </h5>
+
+            {% if doctors %}
+                <div class="hospital-list">
+                    {% for hospital in doctors %}
+                    <div class="hospital-item" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                        <div class="hospital-icon">
+                            <i data-lucide="building-2"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold fs-5 text-dark">
+                                {{ hospital.hospital }}
+                            </div>
+                            <div class="small text-primary fw-semibold opacity-75 d-flex align-items-center gap-1">
+                                <i data-lucide="clock" style="width:12px"></i>
+                                Open: {{ hospital.opening_time }}
+                            </div>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <a href="{{ url_for('hospital_details', index=loop.index0) }}">
+                                <button class="btn btn-sm btn-light border text-primary fw-bold px-3" style="border-radius: 8px;">
+                                    View Details
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 bg-light rounded-4">
+                    <i data-lucide="map-pin-off" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                    <p class="text-muted">No specific hospitals found for <strong>{{ state }}</strong>. <br>Please consult the nearest certified oncology center or multi-specialty hospital.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <div class="footer-alert p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <p class="text-muted small mb-0 d-flex gap-2">
+                <i data-lucide="shield-alert" class="text-warning" style="width: 16px; flex-shrink: 0;"></i>
+                <span><strong>Disclaimer:</strong> This system is an AI-based clinical decision support tool. It is designed to assist, not replace, professional medical diagnosis, laboratory testing, or physician consultation.</span>
+            </p>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="/assessment" class="btn btn-blue-outline">
+                <i data-lucide="refresh-cw"></i>
+                New Assessment
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<footer class="page-footer text-center mt-5">
+    <div class="container">
+        <div class="d-flex justify-content-center gap-5 mb-4 opacity-50">
+            <div class="small fw-bold"><i data-lucide="award" class="me-1"></i> RESEARCH GRADE</div>
+            <div class="small fw-bold"><i data-lucide="database" class="me-1"></i> VERIFIED MODELS</div>
+            <div class="small fw-bold"><i data-lucide="lock" class="me-1"></i> HIPAA GUIDELINES</div>
+        </div>
+        <p class="text-muted small">
+            &copy; 2024 Breast Cancer DSS Laboratory. Secure Patient Guidance Portal.
+        </p>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    lucide.createIcons();
+    AOS.init({ 
+        duration: 1000, 
+        once: true,
+        easing: 'ease-out'
+    });
+</script>
+
+</body>
+</html>

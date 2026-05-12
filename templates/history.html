@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prediction History | Breast Cancer DSS</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+--primary-blue:#0d6efd;
+--accent-blue:#004ab3;
+--bg-light:#f4f7fa;
+--medical-grid:rgba(13,110,253,0.04);
+}
+
+body{
+background-color:var(--bg-light);
+font-family:'Inter',-apple-system,sans-serif;
+color:#334155;
+min-height:100vh;
+margin:0;
+overflow-x:hidden;
+display:flex;
+flex-direction:column;
+background-image:
+linear-gradient(var(--medical-grid)1px,transparent 1px),
+linear-gradient(90deg,var(--medical-grid)1px,transparent 1px);
+background-size:50px 50px;
+}
+
+.pulse-container{
+position:fixed;
+top:25%;
+left:0;
+width:100%;
+height:200px;
+z-index:-1;
+opacity:0.12;
+pointer-events:none;
+}
+
+.pulse-svg path{
+stroke-dasharray:1000;
+stroke-dashoffset:1000;
+animation:dash 10s linear infinite;
+}
+
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes pulse{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}
+
+.navbar{
+background:rgba(13,110,253,0.95)!important;
+backdrop-filter:blur(10px);
+box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.history-card{
+background:white;
+border-radius:24px;
+box-shadow:0 25px 60px rgba(0,0,0,0.06);
+border:1px solid rgba(13,110,253,0.1);
+padding:3rem;
+margin-top:2rem;
+position:relative;
+}
+
+.status-badge{
+background:#eef4ff;
+color:var(--primary-blue);
+padding:8px 18px;
+border-radius:100px;
+font-size:0.7rem;
+font-weight:700;
+text-transform:uppercase;
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-bottom:2rem;
+}
+
+.status-dot{
+width:8px;
+height:8px;
+background-color:var(--primary-blue);
+border-radius:50%;
+animation:pulse 2s infinite;
+}
+
+.table{
+border-collapse:separate;
+border-spacing:0 10px;
+}
+
+.table thead th{
+border:none;
+color:#64748b;
+font-size:0.8rem;
+text-transform:uppercase;
+padding:15px;
+}
+
+.table tbody tr{
+background:#fcfdfe;
+transition:all 0.2s ease;
+box-shadow:0 2px 5px rgba(0,0,0,0.02);
+}
+
+.table tbody tr:hover{
+transform:translateY(-2px);
+background:#f8fafc;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+.table td{
+padding:18px 15px;
+border-top:1px solid #f1f5f9;
+border-bottom:1px solid #f1f5f9;
+font-size:0.95rem;
+}
+
+.table td:first-child{
+border-left:1px solid #f1f5f9;
+border-radius:12px 0 0 12px;
+}
+
+.table td:last-child{
+border-right:1px solid #f1f5f9;
+border-radius:0 12px 12px 0;
+}
+
+.badge-clinical{
+padding:6px 12px;
+border-radius:8px;
+font-weight:600;
+font-size:0.8rem;
+}
+
+.conf-wrapper{
+display:flex;
+align-items:center;
+gap:10px;
+min-width:120px;
+}
+
+.progress{
+height:6px;
+background-color:#e2e8f0;
+border-radius:10px;
+flex-grow:1;
+}
+
+.btn-blue-outline{
+background:transparent;
+color:var(--primary-blue);
+border:2px solid var(--primary-blue);
+padding:12px 28px;
+border-radius:12px;
+font-weight:600;
+transition:all 0.3s ease;
+display:inline-flex;
+align-items:center;
+gap:8px;
+text-decoration:none;
+}
+
+.btn-blue-outline:hover{
+background:rgba(13,110,253,0.05);
+transform:translateY(-2px);
+color:var(--accent-blue);
+}
+
+.page-footer{
+margin-top:auto;
+padding:3rem 0;
+border-top:1px solid #e2e8f0;
+background:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="pulse-container">
+<svg class="pulse-svg" width="100%" height="100%" viewBox="0 0 1000 100" preserveAspectRatio="none">
+<path d="M0,50 L250,50 L270,20 L290,80 L310,50 L600,50 L620,10 L640,90 L660,50 L1000,50"
+fill="none" stroke="rgba(13,110,253,0.2)" stroke-width="2"/>
+</svg>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark py-3">
+<div class="container">
+<span class="navbar-brand d-flex align-items-center gap-2">
+<i data-lucide="heart-pulse" style="width:28px;height:28px;"></i>
+<span class="fw-bold fs-4">Breast Cancer DSS</span>
+</span>
+
+<div class="ms-auto d-flex align-items-center">
+<a href="/" class="btn btn-link text-white text-decoration-none me-4 small d-flex align-items-center gap-1">
+<i data-lucide="home" style="width:16px"></i>Home
+</a>
+
+<span class="text-white me-4 opacity-75 d-none d-sm-block">
+<i data-lucide="check-circle-2" class="me-1" style="width:14px"></i>
+System Online
+</span>
+
+<span class="text-white me-3 fw-medium">{{ session.get('user_name') }}</span>
+
+<a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm px-4">
+Logout
+</a>
+</div>
+</div>
+</nav>
+
+<div class="container py-5">
+
+<div class="text-center mb-5" data-aos="fade-down">
+
+<div class="status-badge">
+<span class="status-dot"></span>
+Cloud Database Connected
+</div>
+
+<h1 class="display-5 fw-bold" style="color:#0f172a;">
+Prediction History
+</h1>
+
+<p class="text-secondary mx-auto" style="max-width:600px;">
+Access all previously processed clinical assessments and risk stratification logs.
+</p>
+
+</div>
+
+<div class="history-card mx-auto" style="max-width:1150px;" data-aos="fade-up">
+
+{% if records %}
+
+<div class="table-responsive">
+
+<table class="table align-middle">
+
+<thead>
+<tr>
+<th>#</th>
+<th>Patient</th>
+<th>Result</th>
+<th>Confidence</th>
+<th>State</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for record in records %}
+
+<tr>
+
+<td class="text-muted fw-bold">
+{{ loop.index }}
+</td>
+
+<td class="fw-semibold">
+{{ record.patient_name }}
+</td>
+
+<td>
+
+{% if record.prediction == "Breast Cancer Detected" %}
+
+<span class="badge-clinical bg-danger text-white">
+Detected
+</span>
+
+{% else %}
+
+<span class="badge-clinical bg-success text-white">
+Not Detected
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<div class="conf-wrapper">
+
+<div class="progress">
+
+<div class="progress-bar bg-primary progress-dynamic"
+role="progressbar"
+data-confidence="{{ record.confidence | default(0) }}">
+</div>
+
+</div>
+
+<span class="fw-bold small">
+{{ record.confidence }}%
+</span>
+
+</div>
+
+</td>
+
+<td class="text-capitalize">
+{{ record.state }}
+</td>
+
+<td class="text-muted small">
+{{ record.timestamp.strftime('%d-%m-%Y %H:%M') }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+
+{% else %}
+
+<div class="text-center py-5">
+
+<i data-lucide="database-zap" class="text-muted mb-3" style="width:48px;height:48px;"></i>
+
+<p class="text-muted fs-5">
+No prediction history available.
+</p>
+
+</div>
+
+{% endif %}
+
+<div class="text-center mt-5">
+
+<a href="/assessment" class="btn btn-blue-outline">
+
+<i data-lucide="plus-square"></i>
+New Assessment
+
+</a>
+
+</div>
+
+</div>
+</div>
+
+<footer class="page-footer text-center mt-5">
+
+<div class="container">
+
+<p class="text-muted small">
+© 2024 Breast Cancer DSS Laboratory
+</p>
+
+</div>
+
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+
+lucide.createIcons();
+AOS.init({duration:1000,once:true});
+
+document.querySelectorAll('.progress-dynamic').forEach(bar=>{
+const confidence=bar.getAttribute('data-confidence');
+bar.style.width=confidence+'%';
+});
+
+</script>
+
+</body>
+</html>

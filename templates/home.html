@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Decision Support System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Professional Iconography -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --accent-blue: #004ab3;
+            --bg-light: #f4f7fa;
+            --medical-grid: rgba(13, 110, 253, 0.04);
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #334155;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            /* Medical Drafting Grid */
+            background-image: 
+                linear-gradient(var(--medical-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--medical-grid) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* The "Pulse Line" - Animate decorative medical line */
+        .pulse-container {
+            position: fixed;
+            top: 25%;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .pulse-svg path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 10s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* Navbar with Glassmorphism */
+        .navbar {
+            background: rgba(13, 110, 253, 0.95) !important;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Hero Section Styling */
+        .hero-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.06);
+            border: 1px solid rgba(13, 110, 253, 0.1);
+            padding: 5rem 3rem;
+            position: relative;
+            margin-top: 3rem;
+            overflow: hidden;
+        }
+
+        /* Corner accents to make it look clinical/precise */
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at top right, rgba(13, 110, 253, 0.05), transparent);
+        }
+
+        .status-badge {
+            background: #eef4ff;
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Large Action Buttons */
+        .btn-action {
+            padding: 16px 40px;
+            border-radius: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .btn-primary-action {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px rgba(13, 110, 253, 0.2);
+        }
+
+        .btn-primary-action:hover {
+            background: var(--accent-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(13, 110, 253, 0.3);
+            color: white;
+        }
+
+        .btn-secondary-action {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary-action:hover {
+            background: rgba(13, 110, 253, 0.05);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: translateY(-3px);
+        }
+
+        /* System Info Section - Adds "Fullness" to the page */
+        .system-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 5rem;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 3rem;
+        }
+
+        .spec-item {
+            text-align: left;
+        }
+
+        .spec-icon {
+            width: 48px;
+            height: 48px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        .page-footer {
+            margin-top: auto;
+            padding: 3rem 0;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Decorative Background Pulse -->
+<div class="pulse-container">
+    <svg class="pulse-svg" width="100%" height="100%" viewBox="0 0 1000 100" preserveAspectRatio="none">
+        <path d="M0,50 L250,50 L270,20 L290,80 L310,50 L600,50 L620,10 L640,90 L660,50 L1000,50" 
+              fill="none" stroke="rgba(13, 110, 253, 0.2)" stroke-width="2" />
+    </svg>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark py-3">
+    <div class="container">
+        <span class="navbar-brand d-flex align-items-center gap-2">
+            <!-- Medical Logo Icon -->
+            <i data-lucide="heart-pulse" style="width: 28px; height: 28px;"></i>
+            <span class="fw-bold fs-4">Breast Cancer DSS</span>
+        </span>
+        <div class="ms-auto d-flex align-items-center">
+            <span class="text-white me-4 opacity-75 d-none d-sm-block">
+                <i data-lucide="check-circle-2" class="me-1" style="width:14px"></i>
+                System Online
+            </span>
+            <span class="text-white me-3 fw-medium">{{ session.get('user_name') }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm px-4">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="hero-card text-center mx-auto" style="max-width: 1000px;" data-aos="fade-up">
+        
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            Advanced Clinical DSS Enabled
+        </div>
+
+        <h1 class="display-4 fw-bold mb-4" style="color: #0f172a;">
+            Early Detection <span class="text-primary">Decision Support</span>
+        </h1>
+
+        <p class="text-secondary fs-5 mb-5 mx-auto" style="max-width: 750px; line-height: 1.6;">
+            Empowering healthcare providers with predictive analytics for breast cancer risk assessment. 
+            Analyze diagnostic markers using state-of-the-art neural networks.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap mb-2">
+            <a href="/assessment" class="btn btn-action btn-primary-action">
+                <i data-lucide="plus-square"></i>
+                New Risk Assessment
+            </a>
+            <a href="/history" class="btn btn-action btn-secondary-action">
+                <i data-lucide="history"></i>
+                History & Logs
+            </a>
+        </div>
+
+        <!-- This expanded grid makes the page feel larger and more professional -->
+        <div class="system-specs">
+            <div class="spec-item" data-aos="fade-right" data-aos-delay="100">
+                <div class="spec-icon"><i data-lucide="zap"></i></div>
+                <h6 class="fw-bold mb-1">Instant Prediction</h6>
+                <p class="small text-muted mb-0">Sub-second processing of clinical data vectors.</p>
+            </div>
+            <div class="spec-item" data-aos="fade-right" data-aos-delay="200">
+                <div class="spec-icon"><i data-lucide="shield-check"></i></div>
+                <h6 class="fw-bold mb-1">Secure & Encrypted</h6>
+                <p class="small text-muted mb-0">Compliant with data protection standards for research.</p>
+            </div>
+            <div class="spec-item" data-aos="fade-right" data-aos-delay="300">
+                <div class="spec-icon"><i data-lucide="bar-chart-big"></i></div>
+                <h6 class="fw-bold mb-1">Visual Analytics</h6>
+                <p class="small text-muted mb-0">Comprehensive risk breakdown for every patient.</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<footer class="page-footer text-center mt-5">
+    <div class="container">
+        <div class="d-flex justify-content-center gap-5 mb-4 opacity-50">
+            <div class="small fw-bold"><i data-lucide="award" class="me-1"></i> RESEARCH GRADE</div>
+            <div class="small fw-bold"><i data-lucide="database" class="me-1"></i> VERIFIED MODELS</div>
+            <div class="small fw-bold"><i data-lucide="lock" class="me-1"></i> HIPAA GUIDELINES</div>
+        </div>
+        <p class="text-muted small mx-auto" style="max-width: 700px;">
+            Disclaimer: This AI tool provides risk estimations based on academic research models. 
+            All results must be validated by a board-certified oncologist.
+            <br>
+            &copy; 2024 Breast Cancer DSS Laboratory. All Rights Reserved.
+        </p>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Load Lucide Icons
+    lucide.createIcons();
+    
+    // Smooth scroll and animations
+    AOS.init({ 
+        duration: 1000, 
+        once: true,
+        easing: 'ease-out'
+    });
+</script>
+
+</body>
+</html>
